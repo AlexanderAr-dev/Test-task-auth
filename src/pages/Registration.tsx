@@ -1,41 +1,32 @@
-import {useForm} from "@mantine/form";
-import {Button, Group, TextInput} from "@mantine/core";
-import {Card} from "../components/Card/Card.tsx";
-import { useNavigate } from "react-router-dom";
-import type {IUser} from "../app/types/IUser.ts";
+import { useNavigate } from 'react-router-dom';
+import { Button, Group, TextInput } from '@mantine/core';
+import { useForm } from '@mantine/form';
+
+import { useRegister } from '../app/hooks/useRegister.ts';
+import { Card } from '../components/Card/Card.tsx';
 
 export const Registration = () => {
   const form = useForm({
-    mode: "uncontrolled",
+    mode: 'uncontrolled',
     initialValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
     validate: {
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Неправильная почта"),
-      password: (value) => (value.length < 8 ? "Пароль должен быть 8 символов" : null),
-    }
-  })
+      email: value => (/^\S+@\S+$/.test(value) ? null : 'Неправильная почта'),
+      password: value => (value.length < 8 ? 'Пароль должен быть 8 символов' : null),
+    },
+  });
   const navigate = useNavigate();
-
-  const register = (values: IUser) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-
-    if (users.find((user: IUser) => user.email === values.email)) {
-      alert("Пользователь с такой почтой уже существует!");
-      return;
-    }
-
-    users.push(values);
-    localStorage.setItem("users", JSON.stringify(users));
-
-    alert("Регистрация успешна!");
-    navigate("/authorization");
-  };
+  const { register } = useRegister();
 
   return (
-    <Card title={"Регистрация пользователя"}>
-      <form onSubmit={form.onSubmit(values => {register(values)})}>
+    <Card title={'Регистрация пользователя'}>
+      <form
+        onSubmit={form.onSubmit(values => {
+          register(values);
+        })}
+      >
         <TextInput
           mb="md"
           withAsterisk
@@ -53,10 +44,12 @@ export const Registration = () => {
           {...form.getInputProps('password')}
         />
         <Group justify="center">
-          <Button onClick={() => navigate('/')} bg="gray">На главную</Button>
+          <Button onClick={() => navigate('/')} bg="gray">
+            На главную
+          </Button>
           <Button type="submit">Подтвердить</Button>
         </Group>
       </form>
     </Card>
-  )
-}
+  );
+};
